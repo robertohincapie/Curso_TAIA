@@ -60,3 +60,23 @@ $$
 
 \end{aligned}
 $$
+
+---
+
+# Alternativas de escenarios a considerar, encontrando nuevas alternativas de optimización para definir. 
+
+El proceso de la analítica prescriptiva busca plantear diferentes modelos que pueden ser alternativas interesantes respecto al problema original. 
+
+Para este caso, propongo que analicemos 3 escenarios alternativos: 
+
+## Separar la ciudad por regiones:
+
+Esto es, definir n regiones (n es un parámetro por definir), donde los usuarios se organizan en n clusters por cercanía y el problema se tiene que resolver n veces, solucionando el número de ambulancias totales como la suma de las ambulancias por cada sector. 
+
+## Separar los servicios por duraciones: 
+
+Esto es, concentrar n tipos de servicio por la duración que tienen. Esto se refiere a si n=2, los servicios que duran hasta, solo como ejemplo, menos de 1 hora y los servicios que duran más de una hora. Si n=3, hay otras divisiones de duraciones. Se debe solucionar el número de ambulancias totales como la suma de las ambulancias por cada grupo de duraciones. 
+
+## Hacer el modelo considerando algo similar a un planificador: 
+
+Hacer un modelo que no tenga la condición extricta por la ventana, sino que la atención por fuera de la ventana tenga un costo adicional en el servicio y mientras 
