@@ -24,7 +24,7 @@ Conjunto de doctores: $\mathbf{D}=\{1, 2, \ldots, j, \ldots, n\}$, indicando que
 
 ## Variables de decisión: 
 
-$x_{i,j,k} Variable binaria que tiene un valor de 1 si el médico $j$ atiende al usuario $i$, comenzando en la ranura de tiempo $k$. 
+$x_{i,j,k}$ Variable binaria que tiene un valor de 1 si el médico $j$ atiende al usuario $i$, comenzando en la ranura de tiempo $k$. 
 
 $y_j$ Variable binaria que tiene un valor de 1 si el médico $j$ está activo en el turno. En nuestro caso, suponemos algo: Es necesario atender a todos los pacientes, pero podemos disminuir el número de médicos que necesitemos. 
 
@@ -80,3 +80,7 @@ Esto es, concentrar n tipos de servicio por la duración que tienen. Esto se ref
 ## Hacer el modelo considerando algo similar a un planificador: 
 
 Hacer un modelo que no tenga la condición extricta por la ventana, sino que la atención por fuera de la ventana tenga un costo adicional en el servicio y mientras 
+
+## Hacer que la ventanas de atención sean deseadas, no restricciones
+
+En este caso suponemos que la ventana entre a y b, no es una restricción sino que genera un costo adicional por no cumplirla
