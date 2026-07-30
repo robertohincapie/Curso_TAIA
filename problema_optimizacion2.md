@@ -75,13 +75,13 @@ C^{\text{med}}
 \sum_{j\in\mathcal D}
 \Bigg(
 \sum_{i\in\mathcal U}
-C_{S,i}\,z_{Sij}
+C_{S,i}\,z_{S,i,j}
 +
 \sum_{\substack{a,b\in\mathcal U\\a\neq b}}
-C_{ab}\,z_{abj}
+C_{a,b}\,z_{a,b,j}
 +
 \sum_{i\in\mathcal U}
-C_{i,F}\,z_{iFj}
+C_{i,F}\,z_{i,F,j}
 \Bigg)
 \end{aligned}
 \]
@@ -90,18 +90,18 @@ sujeto a
 
 \[
 \begin{aligned}
-&
+&i.\;
 \sum_{j\in\mathcal D}
 \sum_{k\in\tau_i}
-x_{ijk}
+x_{i,j,k}
 =
 1,
 &&
 \forall i\in\mathcal U,
 \\[2mm]
-&
+&ii.\;
 \sum_{k\in\tau_i}
-x_{ijk}
+x_{i,j,k}
 \le
 u_j,
 &&
@@ -109,96 +109,105 @@ u_j,
 \forall j\in\mathcal D,
 \\[2mm]
 &
-\sum_{h\in\mathcal H}
-y_{jh}
+iii.\;\sum_{k\in\mathcal T}
+y_{j,k}
 =
 u_j,
 &&
 \forall j\in\mathcal D,
 \\[2mm]
 &
-x_{ijk}
+iv.\;x_{i,j,k}
 \le
 \sum_{\substack{
-h\in\mathcal H\\
-h\le k\\
-k+c_i-1\le h+H-1}}
-y_{jh},
+s\in\mathcal T\\
+s\le k\\
+k+c_i-1\le s+\beta-1}}
+y_{j,h},
 &&
-\forall i,j,\;
-k\in\tau_i,
+\forall i\in\mathcal U,\;
+\forall j\in\mathcal D,\;
+\forall k\in\tau_i,
 \\[2mm]
 &
-\sum_{i\in\mathcal U}
-z_{Sij}
+v.\;\sum_{i\in\mathcal U}
+z_{S,i,j}
 =
 u_j,
 &&
 \forall j\in\mathcal D,
 \\[2mm]
 &
-\sum_{i\in\mathcal U}
-z_{iFj}
+vi.\;\sum_{i\in\mathcal U}
+z_{i,F,j}
 =
 u_j,
 &&
 \forall j\in\mathcal D,
 \\[2mm]
 &
-z_{Sij}
+vii.\;z_{S,i,j}
 +
 \sum_{\substack{a\in\mathcal U\\a\neq i}}
-z_{aij}
+z_{a,i,j}
 =
 \sum_{k\in\tau_i}
-x_{ijk},
+x_{i,j,k},
 &&
-\forall i,j,
+\forall i\in\mathcal U,\;
+\forall j\in\mathcal D,\;
+
 \\[2mm]
 &
-z_{iFj}
+viii.\;z_{i,F,j}
 +
 \sum_{\substack{b\in\mathcal U\\b\neq i}}
-z_{ibj}
+z_{i,b,j}
 =
 \sum_{k\in\tau_i}
-x_{ijk},
+x_{i,j,k},
 &&
-\forall i,j,
+\forall i\in\mathcal U,\;
+\forall j\in\mathcal D,\;
 \\[2mm]
 &
-t_b
+ix.\;t_b
 \ge
 t_a
 +
 c_a
 +
-\delta_{ab}
+\delta_{a,b}
 -
-M_T(1-z_{abj}),
+M_T(1-z_{a,b,j}),
 &&
-\forall j,\;
+\forall j\in\mathcal D,\;
+\forall a\in\mathcal U,\;
+\forall b\in\mathcal U,\;
 a\neq b,
 \\[2mm]
 &
+x.\;
 t_i
 \ge
 q_j
 +
 \delta_{S,i}
 -
-M_T(1-z_{Sij}),
+M_T(1-z_{S,i,j}),
 &&
-\forall i,j,
+\forall i\in\mathcal U,\;
+\forall j\in\mathcal D,\;
 \\[2mm]
 &
-t_i+c_i+\delta_{i,F}
+xi.\;t_i+c_i+\delta_{i,F}
 \le
-q_j+H
+q_j+\beta
 +
-M_T(1-z_{iFj}),
+M_T(1-z_{i,F,j}),
 &&
-\forall i,j,
+\forall i\in\mathcal U,\;
+\forall j\in\mathcal D,\;
 \\[2mm]
 &
 u_j
@@ -208,12 +217,12 @@ u_{j+1},
 j=1,\ldots,n-1,
 \\[2mm]
 &
-x_{ijk},
+x_{i,j,k},
 u_j,
-y_{jh},
-z_{abj},
-z_{Sij},
-z_{iFj}
+y_{j,h},
+z_{a,b,j},
+z_{S,i,j},
+z_{i,F,j}
 \in
 \{0,1\}.
 \end{aligned}
