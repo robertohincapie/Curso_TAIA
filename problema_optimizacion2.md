@@ -514,3 +514,270 @@ Salida:
    Solo indica que **esta heurística**, bajo su orden y su regla de asignación temprana, no logró construir una solución.
 
 4. El uso principal del procedimiento es explorar el menor número de médicos con el que la heurística logra una solución factible de manera rápida y comprensible.
+
+
+# Heurística constructiva parametrizada por el orden de pacientes
+
+## Propósito
+
+Se define una heurística constructiva que recibe explícitamente el **orden en el cual deben procesarse los pacientes**.
+
+A diferencia de la formulación heurística anterior, el orden de prioridad **no se determina internamente** a partir de las ventanas de atención. En su lugar, dicho orden constituye un parámetro de entrada de la heurística.
+
+Esta modificación permite separar dos decisiones:
+
+1. **Orden de procesamiento de los pacientes:** determinado externamente.
+2. **Construcción de la solución:** realizada por la heurística mediante una política voraz de asignación.
+
+Esta separación permite utilizar posteriormente un algoritmo genético en el cual cada individuo representa una permutación de los pacientes y la heurística actúa como función constructiva para evaluar dicha permutación.
+
+---
+
+## Entrada de la heurística
+
+La heurística se define como:
+
+```text
+Heuristic(n, orden_pacientes)
+```
+
+donde:
+
+* \(n\) es el número máximo de médicos disponibles.
+* `orden_pacientes` es una permutación de los pacientes:
+
+$$
+\pi=(\pi_1,\pi_2,\ldots,\pi_m),
+$$
+
+tal que:
+
+$$
+\{\pi_1,\pi_2,\ldots,\pi_m\}=\mathcal U.
+$$
+
+Por tanto, cada paciente debe aparecer exactamente una vez en el arreglo.
+
+La posición de un paciente en \(\pi\) representa su prioridad dentro del proceso constructivo. El paciente \(\pi_1\) se procesa primero, seguido por \(\pi_2\), y así sucesivamente hasta \(\pi_m\).
+
+---
+
+## Interpretación para el algoritmo genético
+
+El vector
+
+$$
+\pi=(\pi_1,\pi_2,\ldots,\pi_m)
+$$
+
+puede interpretarse directamente como un **cromosoma basado en permutaciones**.
+
+Cada gen contiene el identificador de un paciente y su posición determina su prioridad de procesamiento.
+
+Por ejemplo:
+
+$$
+\pi=(7,3,1,5,2,6,4)
+$$
+
+indica que la heurística intentará asignar primero al paciente 7, luego al paciente 3, posteriormente al paciente 1, y así sucesivamente.
+
+La heurística no modifica, reordena ni corrige esta secuencia. La utiliza exactamente en el orden recibido.
+
+De esta manera, diferentes cromosomas pueden producir diferentes soluciones aun cuando se utilice el mismo número de médicos.
+
+---
+
+## Regla de construcción
+
+Dado:
+
+$$
+\pi=(\pi_1,\pi_2,\ldots,\pi_m),
+$$
+
+la heurística procesa secuencialmente:
+
+$$
+\pi_1,\pi_2,\ldots,\pi_m.
+$$
+
+Para cada paciente \(i=\pi_r\), los médicos se evalúan en el orden:
+
+$$
+1,2,\ldots,n.
+$$
+
+Para cada médico se busca la ranura factible de inicio más temprana.
+
+### Médico inactivo
+
+Si el médico \(j\) todavía no tiene pacientes asignados, se selecciona:
+
+$$
+k_i=\min\tau_i.
+$$
+
+Al realizar la primera asignación, el médico queda activo y el inicio de su turno se fija como:
+
+$$
+q_j=k_i.
+$$
+
+### Médico activo
+
+Sea \(a(j)\) el último paciente atendido por el médico \(j\).
+
+El nuevo paciente \(i\) no puede comenzar antes de:
+
+$$
+t_{a(j)}+c_{a(j)}+\delta_{a(j),i}.
+$$
+
+Por tanto, se busca el menor:
+
+$$
+k\in\tau_i
+$$
+
+que satisfaga:
+
+$$
+k\geq t_{a(j)}+c_{a(j)}+\delta_{a(j),i},
+$$
+
+y además:
+
+$$
+k+c_i\leq q_j+\beta.
+$$
+
+Si existe dicho \(k\), el paciente se asigna inmediatamente al médico \(j\) y no se evalúan los médicos restantes.
+
+---
+
+## Factibilidad
+
+Si para algún paciente \(i=\pi_r\) ninguno de los \(n\) médicos admite una asignación factible, la construcción termina y el cromosoma se considera **no factible para ese valor de \(n\)**.
+
+Debe observarse que esto no demuestra que el problema original sea infactible. Únicamente indica que la secuencia de prioridades representada por \(\pi\), junto con la política voraz de asignación utilizada, no logró construir una solución factible.
+
+Por tanto, dos permutaciones diferentes pueden tener comportamientos distintos:
+
+$$
+\pi^{(1)} \rightarrow \text{solución no factible},
+$$
+
+mientras que:
+
+$$
+\pi^{(2)} \rightarrow \text{solución factible}.
+$$
+
+---
+
+## Función de evaluación
+
+Cuando la construcción es factible, se calcula el costo de la solución mediante:
+
+$$
+\text{Costo total}
+=
+\sum_{j\in\mathcal D^{act}} C^{med}
++
+\sum_{j\in\mathcal D^{act}}
+\left(
+C_{S,i_1^{(j)}}
++
+\sum_{\ell=1}^{r_j-1}
+C_{i_\ell^{(j)},i_{\ell+1}^{(j)}}
++
+C_{i_{r_j}^{(j)},T}
+\right).
+$$
+
+Por tanto, para un número fijo de médicos \(n\), la heurística puede interpretarse como una función:
+
+$$
+H_n(\pi)
+\longrightarrow
+(\text{factibilidad},\text{costo},\text{asignación}).
+$$
+
+Esta función puede utilizarse directamente para evaluar los individuos de un algoritmo genético.
+
+---
+
+## Pseudocódigo
+
+```text
+Heuristic(n, orden_pacientes)
+
+Entrada:
+    - Número máximo de médicos disponibles n
+    - Permutación orden_pacientes = (pi_1, ..., pi_m)
+    - Conjuntos y parámetros del problema
+
+Salida:
+    - Indicador de factibilidad
+    - Costo total, si existe solución factible
+    - Asignaciones construidas
+
+1. Verificar que orden_pacientes sea una permutación válida de U.
+2. Inicializar los n médicos como inactivos y sin pacientes.
+
+3. Para cada paciente i en orden_pacientes:
+
+4.     asignado <- Falso
+
+5.     Para j = 1 hasta n:
+
+6.         Si el médico j está inactivo:
+7.             Buscar el menor k en tau_i.
+
+8.         Si el médico j está activo:
+9.             Sea a(j) el último paciente del médico j.
+10.            Buscar el menor k en tau_i tal que
+
+                   k >= t_a(j) + c_a(j) + delta_a(j),i
+
+                y
+
+                   k + c_i <= q_j + beta.
+
+11.        Si dicho k existe:
+
+12.            Asignar el paciente i al médico j en la ranura k.
+
+13.            Si j estaba inactivo:
+14.                fijar q_j = k.
+
+15.            Actualizar el último paciente del médico j.
+
+16.            asignado <- Verdadero.
+
+17.            Salir del ciclo sobre médicos.
+
+18.    Si asignado = Falso:
+19.        Retornar solución no factible.
+
+20. Calcular el costo fijo de los médicos activados.
+
+21. Calcular el costo de desplazamiento de las rutas construidas.
+
+22. Retornar solución factible, costo y asignaciones.
+```
+
+## Observación fundamental
+
+La heurística ya no contiene una política para determinar qué paciente tiene prioridad.
+
+Toda la exploración del orden de los pacientes queda delegada al procedimiento externo que genera `orden_pacientes`.
+
+En particular, en un algoritmo genético:
+
+$$
+\boxed{\text{cromosoma}=\text{orden de procesamiento de los pacientes}}
+$$
+
+mientras que la heurística constituye el procedimiento determinista que transforma ese cromosoma en una solución del problema.
