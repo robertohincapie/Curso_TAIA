@@ -9,6 +9,7 @@ dependencies = [
     "gurobipy>=13.0.2",
     "ipykernel>=7.3.0",
     "matplotlib>=3.11.0",
+    "networkx>=3.6.1",
     "numpy>=2.5.1",
     "pulp>=3.3.2",
     "pygad>=3.7.0",
